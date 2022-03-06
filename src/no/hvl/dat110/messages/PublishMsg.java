@@ -49,7 +49,6 @@ public class PublishMsg extends Message {
 	}
 	
 	public String getMessage() {
-		
-		throw new UnsupportedOperationException(TODO.method());
+		return message;
 	}
 }
