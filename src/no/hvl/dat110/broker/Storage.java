@@ -55,8 +55,14 @@ public class Storage {
 		// TODO: add corresponding client session to the storage
 		// See ClientSession class
 		
-		throw new UnsupportedOperationException(TODO.method());
-		
+		//Dersom klienten ikke finnes fra før
+		if(!clients.containsKey(user)) {
+			//Lager en ny client session 
+			ClientSession clientSession = new ClientSession(user, connection);
+			
+			clients.put(user, clientSession);
+			
+		}		
 	}
 
 	public void removeClientSession(String user) {
@@ -64,23 +70,41 @@ public class Storage {
 		// TODO: disconnet the client (user) 
 		// and remove client session for user from the storage
 		
-		throw new UnsupportedOperationException(TODO.method());
+		//Dersom klienten finnes...
+		if(clients.containsKey(user)) {
+			
+			//...så sletter vi personen
+			clients.remove(user);
+		}
 		
 	}
 
 	public void createTopic(String topic) {
 
 		// TODO: create topic in the storage
-
-		throw new UnsupportedOperationException(TODO.method());
-	
+		//Dersom topic ikke finnes fra før
+		if(!subscriptions.containsKey(topic)) {
+			
+			//Lager et nytt set med subscribers
+			Set<String> subscribers = ConcurrentHashMap.newKeySet();
+			
+			//Legger til den nye topic og tilhørende subscribers i subscriptions
+			subscriptions.put(topic, subscribers);
+		}
+		
+		
 	}
 
 	public void deleteTopic(String topic) {
 
 		// TODO: delete topic from the storage
 
-		throw new UnsupportedOperationException(TODO.method());
+		//Fjerner fra map dersom den finnes
+		if(subscriptions.containsKey(topic)) {
+			subscriptions.remove(topic);
+		}
+
+		
 		
 	}
 
@@ -88,14 +112,32 @@ public class Storage {
 
 		// TODO: add the user as subscriber to the topic
 		
-		throw new UnsupportedOperationException(TODO.method());
+		//Henter først ut de subscribers som er nå
+		Set<String> currentSubscribers = getSubscribers(topic);
+		
+		//Legger til den nye
+		currentSubscribers.add(user);
+		
+		//Erstatter den eksisterende topic med en som har med den nye
+		subscriptions.replace(topic, currentSubscribers);
+		
 		
 	}
 
 	public void removeSubscriber(String user, String topic) {
 
 		// TODO: remove the user as subscriber to the topic
+		
+		//henter ut nåværende subscribers
+		Set<String> currentSubscribers = getSubscribers(topic);
+		
+		//Dersom subscriber finnes, så fjerner vi den 
+		if(currentSubscribers.contains(user)) {
+			currentSubscribers.remove(user);
+		}
+		
+		//Erstatter med oppdatert liste
+		subscriptions.replace(topic, currentSubscribers);
 
-		throw new UnsupportedOperationException(TODO.method());
 	}
 }
